@@ -12,5 +12,5 @@ input   [31:0]      RS2;
 input               BRANCH;
 output              FLUSH;
 
-assign  FLUSH=  ((RS1 == RS2) && (BRANCH == 1'b1))?1'b1:1'b0
+assign  FLUSH=  ((RS1 == RS2) && (BRANCH == 1'b1))?1'b1:1'b0;
 endmodule
