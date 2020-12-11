@@ -17,7 +17,7 @@ output  [31:0]      VALUE_OUT;
 assign  VALUE_OUT=  (forward_control==2'b00)?RS_VALUE:
                     (forward_control==2'b10)?EX_MEM_VALUE:
                     (forward_control==2'b01)?MEM_WB_VALUE:
-                    2'bx;
+                    32'bx;
                     
 
 endmodule
