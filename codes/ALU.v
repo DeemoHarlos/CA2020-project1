@@ -11,11 +11,10 @@ input  signed [31:0] data1_i;
 input  signed [31:0] data2_i;
 input         [ 2:0] ALUCtrl_i;
 output signed [31:0] data_o;
-output               Zero_o;
 
 wire          [31:0] result;
 
-assign result = (ALUCtrl_i == 4'b0000) ? data1_i  &  data2_i : // and
+assign data_o = (ALUCtrl_i == 4'b0000) ? data1_i  &  data2_i : // and
                 (ALUCtrl_i == 4'b0001) ? data1_i  ^  data2_i : // xor
                 (ALUCtrl_i == 4'b0010) ? data1_i  << data2_i : // sll
                 (ALUCtrl_i == 4'b0011) ? $signed(data1_i) + $signed(data2_i) : // add
@@ -27,8 +26,5 @@ assign result = (ALUCtrl_i == 4'b0000) ? data1_i  &  data2_i : // and
                 (ALUCtrl_i == 4'b1001) ? data1_i  +  data2_i: // sw
                 (ALUCtrl_i == 4'b1010) ? data1_i  << data2_i : // beq
                 32'b0;
-
-assign data_o = result;
-assign Zero_o = result ? 1 : 0;
 
 endmodule
