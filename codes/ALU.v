@@ -2,8 +2,7 @@ module ALU(
     data1_i,
     data2_i,
     ALUCtrl_i,
-    data_o,
-    Zero_o
+    data_o
 );
 
 
