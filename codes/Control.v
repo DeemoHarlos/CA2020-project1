@@ -1,43 +1,32 @@
-module Control(
+module Control
+(
     Op_i,
+    No_Op_i,
+    RegWrite_o,
+    MemtoReg_o,
+    MemRead_o,
+    MemWrite_o,
     ALUOp_o,
     ALUSrc_o,
-    RegWrite_o,
-    //new
-    output MemtoReg_o,
-    output MemRead_o,
-    output MemWrite_o,
-    output Branch_o,
-    input No_Op_i
+    Branch_o
 );
 
-// Ports
-input    [6:0]      Op_i;     //opcode
-output wire reg [1:0]      ALUOp_o;
-output wire reg            ALUSrc_o;
-output wire reg            RegWrite_o;
+input [6:0] Op_i;
+input No_Op_i;
+output RegWrite_o;
+output MemtoReg_o;
+output MemRead_o;
+output MemWrite_o;
+output [2:0] ALUOp_o;
+output ALUSrc_o;
+output Branch_o;
 
-// Wires & Registers
-// reg      [1:0]      ALUOp_o;
-// reg                 ALUSrc_o;
-// reg                 RegWrite_o;
-
-// set controls
-always@(Op_i) begin
-  	case(Op_i)
-		7'b0010011:            //I-type
-      begin
-  			ALUOp_o = 2'b01;
-  			ALUSrc_o = 1'b1;
-      end
-		7'b0110011:            //R-type
-      begin
-  			ALUOp_o = 2'b00;
-  			ALUSrc_o = 1'b0;
-      end
-	  endcase
-    RegWrite_o = 1'b1;
-end
-
+assign RegWrite_o = ~No_Op_i & (Op_i[4] | ~Op_i[5]);
+assign MemtoReg_o = ~No_Op_i & (Op_i[6:4] == 3'b000);
+assign MemRead_o  = ~No_Op_i & (Op_i[6:4] == 3'b000);
+assign MemWrite_o = ~No_Op_i & (Op_i[6:4] == 3'b010);
+assign ALUOp_o    = ~No_Op_i & Op_i[6:4];
+assign ALUSrc_o   = ~No_Op_i & Op_i[5];
+assign Branch_o   = ~No_Op_i & Op_i[6];
 
 endmodule
