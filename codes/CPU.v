@@ -332,19 +332,19 @@ Forward_Unit Forward_Unit(
 
 
 Forward_MUX Forward_MUX(      //for ForwardA    //top MUX4    ok
-    .read_data_i    (ID_EX_RS1data_o),         //read_data1 00
-    .WB_Write_Data_i(WB_Write_Data),         //01
-    .MEM_ALU_Result (EX_MEM_ALUResult),         //10
-    .select_i       (ForwardA),         //from Forwarding Unit
-    .mux_o          (muxA_o)          //mux output -> alu
+    .RS_VALUE    (ID_EX_RS1data_o),         //read_data1 00
+    .MEM_WB_VALUE(WB_Write_Data),         //01
+    .EX_MEM_VALUE (EX_MEM_ALUResult),         //10
+    .forward_control       (ForwardA),         //from Forwarding Unit
+    .VALUE_OUT          (muxA_o)          //mux output -> alu
 );    
 
 Forward_MUX Forward_MUX(      //for ForwardB     //bottom MUX4    ok
-    .read_data_i    (ID_EX_RS2data_o),         //read_data1 00
-    .WB_Write_Data_i(WB_Write_Data),         //01
-    .MEM_ALU_Result (EX_MEM_ALUResult),         //10
-    .select_i       (ForwardB),         //from Forwarding Unit
-    .mux_o          (muxB_o)          //mux output -> center mux32 & EX/MEM 
+    .RS_VALUE    (ID_EX_RS2data_o),         //read_data1 00
+    .MEM_WB_VALUE(WB_Write_Data),         //01
+    .EX_MEM_VALUE (EX_MEM_ALUResult),         //10
+    .forward_control       (ForwardB),         //from Forwarding Unit
+    .VALUE_OUT          (muxB_o)          //mux output -> center mux32 & EX/MEM 
 );    
 ////////////////////////////////
 
