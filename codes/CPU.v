@@ -10,7 +10,7 @@ input               clk_i;
 input               rst_i;
 input               start_i;
 
-wire [2:0]  alu_ctrl;       //ALU_Control output and ALU input
+wire [3:0]  alu_ctrl;       //ALU_Control output and ALU input
 
 wire [31:0] alu_result;     //ALU output, Registers input
 
