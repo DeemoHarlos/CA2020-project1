@@ -43,8 +43,37 @@ initial begin
     // [RegisterInitialization] DO NOT REMOVE THIS FLAG !!!
 
     // TODO: initialize your pipeline registers
+    CPU.RegisterIF_ID.pc_o = 0;
+    CPU.RegisterIF_ID.instr_o = 0;
 
-    
+    CPU.RegisterID_EX.RegWrite_o = 0;
+    CPU.RegisterID_EX.MemtoReg_o = 0;
+    CPU.RegisterID_EX.MemRead_o = 0;
+    CPU.RegisterID_EX.MemWrite_o = 0;
+    CPU.RegisterID_EX.ALUOp_o = 0;
+    CPU.RegisterID_EX.funct_o = 0;
+    CPU.RegisterID_EX.ALUSrc_o = 0;
+    CPU.RegisterID_EX.imm_o = 0;
+    CPU.RegisterID_EX.RS1data_o = 0;
+    CPU.RegisterID_EX.RS2data_o = 0;
+    CPU.RegisterID_EX.RSaddr_o = 0;
+    CPU.RegisterID_EX.RTaddr_o = 0;
+    CPU.RegisterID_EX.RDaddr_o = 0;
+
+    CPU.RegisterEX_MEM.RegWrite_o = 0;
+    CPU.RegisterEX_MEM.MemtoReg_o = 0;
+    CPU.RegisterEX_MEM.MemRead_o = 0;
+    CPU.RegisterEX_MEM.MemWrite_o = 0;
+    CPU.RegisterEX_MEM.ALU_Result_o = 0;
+    CPU.RegisterEX_MEM.muxBresult_o = 0;
+    CPU.RegisterEX_MEM.RDaddr_o = 0;
+
+    CPU.RegisterMEM_WB.RegWrite_o = 0;
+    CPU.RegisterMEM_WB.MemtoReg_o = 0;
+    CPU.RegisterMEM_WB.ALU_Result_o = 0;
+    CPU.RegisterMEM_WB.data_o = 0;
+    CPU.RegisterMEM_WB.RDaddr_o = 0;
+
     // Load instructions into instruction memory
     // Make sure you change back to "instruction.txt" before submission
     $readmemb("instruction.txt", CPU.Instruction_Memory.memory);
@@ -69,8 +98,8 @@ always@(posedge Clk) begin
         $finish;
 
     // put in your own signal to count stall and flush
-    if(CPU.Hazard_Detection.Stall_o == 1 && CPU.Control.Branch_o == 0)stall = stall + 1;
-    if(CPU.Flush == 1)flush = flush + 1;  
+    if(CPU.Hazard_Detection_Unit.STALL == 1 && CPU.Control.Branch_o == 0)stall = stall + 1;
+    if(CPU.Branch_Unit.FLUSH == 1)flush = flush + 1;  
 
     // print PC
     // DO NOT CHANGE THE OUTPUT FORMAT
