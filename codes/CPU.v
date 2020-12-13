@@ -28,8 +28,8 @@ wire [31:0] reg_data1_temp;     //Registers output -> ID/EX
 wire [31:0] reg_data2_temp;     //Registers output -> ID/EX
 
 
-wire flush;                 //branch_unit output, left mux32 input, if/id input
-wire stall;                 //hdu output, if/id input
+wire reg flush;                 //branch_unit output, left mux32 input, if/id input
+wire reg stall;                 //hdu output, if/id input
 
 
 
@@ -42,7 +42,7 @@ wire ctrl_reg_write;    //Control output, registers input
 wire ctrl_memtoreg;     //Control output, back mux32 input
 wire ctrl_memread;      //Control output, data memory input
 wire ctrl_memwrite;     //Control output, data memory input
-wire [1:0] ALUOp;       //Control output, ALU_Contol input
+wire [2:0] ALUOp;       //Control output, ALU_Contol input
 wire ctrl_alu_src;      //Control output, center MUX32 input
 wire branch;            //control output, branch_unit input 
 
@@ -59,14 +59,14 @@ wire [31:0] Add_imm_data_o;     //right adder output, left mux input
 wire [31:0] IF_ID_pc_o;            //PC output                 = IF/ID output -> right adder
 wire [31:0] IF_ID_instr;           //instruction_memory output = IF/ID output -> control [6:0], rdreg1[19:15], rdreg2[24:20], imm gen[31:0], id/ex ([31:25],[14:12]),[19:15],[24:20],[11:7]
 
-wire mux_pc;                //left mux output, pc input
+wire [31:0] mux_pc;                //left mux output, pc input
 
 
-wire WB_Write_Data;         //right mux32 output, registers input(writedata) & 2 mux4 inputs(01)
+wire [31:0] WB_Write_Data;         //right mux32 output, registers input(writedata) & 2 mux4 inputs(01)
 
 wire [31:0] DM_o;           //DataMemory output, MEM/WB input 
 
-wire ForwardA, ForwardB;  //from forwarding unit to mux4 as signal
+wire [1:0] ForwardA, ForwardB;  //from forwarding unit to mux4 as signal
 wire [31:0] muxA_o,muxB_o;       //output wire for top and bottom mux4
 
 //wires needed for ID/EX
@@ -75,7 +75,7 @@ wire [31:0] ID_EX_RS1data_o, ID_EX_RS2data_o, ID_EX_imm_o;
 wire [4:0]  ExRs1, ExRs2;                                   //ID/EX -> Forwarding Unit
 wire [9:0]  ID_EX_funct_o;                                  //ID/EX -> ALUControl
 wire [4:0]  ID_EX_RDaddr_o;                                 //ID/EX -> EX/MEM & Hazard DU
-wire [1:0] ID_EX_ALUOp_o;        //not sure size (either 1 or 2 bit(s))
+wire [2:0] ID_EX_ALUOp_o;        //not sure size (either 1 or 2 bit(s))
 
 //wires needed for EX/MEM 
 wire EX_MEM_RegWrite_o, EX_MEM_MemtoReg_o;
@@ -96,7 +96,7 @@ Adder Add_PC(          //left adder    same as HW4                OK
 );
 
 Adder Add_imm(          //right adder                
-    .data1_in   (imm_o),         //imm gen output already shift left (refer immegen) 
+    .data1_in   (imm_out),         //imm gen output already shift left (refer immegen) 
     .data2_in   (IF_ID_pc_o),         //from if/id pc_o
     .data_o     (Add_imm_data_o)
 );
@@ -155,14 +155,14 @@ MUX32 MUX_ALUSrc(           //center mux
     .data_o     (ALU_i1)            //output sent to alu as input 2 (ignore wire naming)
 );
 
-MUX32 MUX32(           //For Hazard DU (left mux)
+MUX32 HazardMUX(           //For Hazard DU (left mux)
     .data1_i    (PC_i),
     .data2_i    (Add_imm_data_o),
     .select_i   (flush),   
     .data_o     (mux_pc)  
 );
 
-MUX32 MUX32(           //After MEM/WB (right mux)
+MUX32 WB_MUX32(           //After MEM/WB (right mux)
     .data1_i    (MEM_WB_ALUResult),
     .data2_i    (MEM_WB_DM_o),
     .select_i   (MEM_WB_MemtoReg_o),   
@@ -307,31 +307,31 @@ RegisterMEM_WB RegisterMEM_WB(
 /////////////////////////////////////
 
 Hazard_Detection_Unit Hazard_Detection_Unit(
-    .MemRead_i (ID_EX_MemRead_o),   //from ID/EX MemRead
-    .RDaddr_i  (ID_EX_RDaddr_o),    //from ID/EX RDaddr = instruction[11:7]
-    .IF_ID_RS_i(IF_ID_instr[19:15]), //from if/id
-    .IF_ID_RT_i(IF_ID_instr[24:20]), //from if/id
-    .No_Op_o   (NoOp),          //to Ctrl
-    .PCWrite_o (PCWrite),       //to PC
-    .Stall_o   (stall)          //to IF/ID
+    .ID_EX_MR (ID_EX_MemRead_o),   //from ID/EX MemRead
+    .ID_EX_Rd  (ID_EX_RDaddr_o),    //from ID/EX RDaddr = instruction[11:7]
+    .RS1(IF_ID_instr[19:15]), //from if/id
+    .RS2(IF_ID_instr[24:20]), //from if/id
+    .No_Op   (NoOp),          //to Ctrl
+    .PC_write (PCWrite),       //to PC
+    .STALL   (stall)          //to IF/ID
 );
 
 Forward_Unit Forward_Unit(
     //from ID/EX
-    .EX_Rs1_i       (ExRs1),
-    .EX_Rs2_i       (ExRs2),
-    .WB_Rd_i        (MEM_WB_RDaddr_o),      //WBRd = from MEM/WB
-    .WB_RegWrite_i  (MEM_WB_RegWrite_o),
-    .MEM_Regwrite_i (EX_MEM_RegWrite_o),    //MEMRegwrite from EX/MEM
-    .MEM_Rd_i       (EX_MEM_RDaddr_o),      //MEMRd from EX/MEM
-    .Forward_A_o    (ForwardA),     //to top mux
-    .Forward_B_o    (ForwardB)      //to bottom mux
+    .RS1       (ExRs1),
+    .RS2       (ExRs2),
+    .MEM_WB_Rd        (MEM_WB_RDaddr_o),      //WBRd = from MEM/WB
+    .MEM_WB_RW  (MEM_WB_RegWrite_o),
+    .EX_MEM_RW (EX_MEM_RegWrite_o),    //MEMRegwrite from EX/MEM
+    .EX_MEM_Rd       (EX_MEM_RDaddr_o),      //MEMRd from EX/MEM
+    .forward1    (ForwardA),     //to top mux
+    .forward2    (ForwardB)      //to bottom mux
 );
 
 //MUX with input 00,01,10,11
 
 
-Forward_MUX Forward_MUX(      //for ForwardA    //top MUX4    ok
+Forward_MUX Forward_MUX_A(      //for ForwardA    //top MUX4    ok
     .RS_VALUE    (ID_EX_RS1data_o),         //read_data1 00
     .MEM_WB_VALUE(WB_Write_Data),         //01
     .EX_MEM_VALUE (EX_MEM_ALUResult),         //10
@@ -339,7 +339,7 @@ Forward_MUX Forward_MUX(      //for ForwardA    //top MUX4    ok
     .VALUE_OUT          (muxA_o)          //mux output -> alu
 );    
 
-Forward_MUX Forward_MUX(      //for ForwardB     //bottom MUX4    ok
+Forward_MUX Forward_MUX_B(      //for ForwardB     //bottom MUX4    ok
     .RS_VALUE    (ID_EX_RS2data_o),         //read_data1 00
     .MEM_WB_VALUE(WB_Write_Data),         //01
     .EX_MEM_VALUE (EX_MEM_ALUResult),         //10
@@ -352,7 +352,7 @@ ALU ALU(                //ok
     .data1_i    (muxA_o),           //topmux4 ->alu input 1
     .data2_i    (ALU_i1),           //bottom mux4 -> alu input 2 (ignore the wire naming)
     .ALUCtrl_i  (alu_ctrl),         //aluctrl -> alu
-    .data_o     (alu_result),       //alu output -> EX/MEM
+    .data_o     (alu_result)       //alu output -> EX/MEM
     //.Zero_o     (zero)            //unused in Project
 );
 
