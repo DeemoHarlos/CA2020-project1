@@ -23,7 +23,7 @@ module RegisterID_EX(
     RDaddr_i   ,
 
     RS1data_o   ,
-    RTdata_o   ,
+    RS2data_o   ,
     imm_o      ,
     funct_o    ,
     RDaddr_o   ,
@@ -36,9 +36,9 @@ module RegisterID_EX(
 );
 
 input                   clk_i;
-input       [1:0]       ALUOp_i;
+input       [2:0]       ALUOp_i;
 input ALUSrc_i, RegWrite_i, MemWrite_i, MemRead_i, MemtoReg_i, Branch_i;
-output reg  [1:0]       ALUOp_o;
+output reg  [2:0]       ALUOp_o;
 output reg  ALUSrc_o, RegWrite_o, MemWrite_o, MemRead_o, MemtoReg_o, Branch_o;
 
 input       [31:0]      pc_i;
@@ -67,7 +67,7 @@ always @(posedge clk_i) begin
     MemRead_o <= MemRead_i; 
     MemtoReg_o <= MemtoReg_i;
     RS1data_o <= RS1data_i;
-    RTdata_o <= RS2data_i;
+    RS2data_o <= RS2data_i;
     imm_o <= imm_i;
 	funct_o <= funct_i;
     RDaddr_o <= RDaddr_i;
