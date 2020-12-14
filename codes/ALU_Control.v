@@ -17,8 +17,8 @@ assign ALUCtrl_o =  (ALUOp_i == 3'b011 && funct_i == 10'b0000000111) ? 4'b0000 :
                     (ALUOp_i == 3'b011 && funct_i == 10'b0000001000) ? 4'b0101 :
                     (ALUOp_i == 3'b001 && funct_i[2:0]   ==  3'b000) ? 4'b0110 :
                     (ALUOp_i == 3'b001 && funct_i == 10'b0100000101) ? 4'b0111 :
-                    (ALUOp_i == 3'b000 && funct_i == 10'b0000001000) ? 4'b1000 :
-                    (ALUOp_i == 3'b010 && funct_i == 10'b0000001000) ? 4'b1001 :
+                    (ALUOp_i == 3'b000 && funct_i[2:0] == 3'b010)    ? 4'b1000 :
+                    (ALUOp_i == 3'b010 && funct_i[2:0] == 3'b010)    ? 4'b1001 :
                     (ALUOp_i == 3'b110 && funct_i == 10'b0000001000) ? 4'b1010 :
                     4'b0000;
 

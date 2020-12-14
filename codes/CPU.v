@@ -190,6 +190,7 @@ Data_Memory Data_Memory(
 //Pipeline Registers//
 RegisterIF_ID RegisterIF_ID(                //ok
     .clk_i      (clk_i),
+    .rst_i      (rst_i),
     .pc_i       (PC_o),
     .instr_i    (instr),
     .stall_i    (stall),
@@ -204,6 +205,7 @@ RegisterIF_ID RegisterIF_ID(                //ok
 RegisterID_EX RegisterID_EX(
     //inputs
     .clk_i      (clk_i),
+    .rst_i      (rst_i),
     //from Control (only branch is not connected)
     .RegWrite_i   (ctrl_reg_write),
     .MemtoReg_i   (ctrl_memtoreg),
@@ -255,6 +257,7 @@ RegisterID_EX RegisterID_EX(
 RegisterEX_MEM RegisterEX_MEM(
     //inputs
     .clk_i      (clk_i),
+    .rst_i      (rst_i),
     //from ID/EX
     .RegWrite_i   (ID_EX_RegWrite_o),
     .MemtoReg_i   (ID_EX_MemtoReg_o),
@@ -286,6 +289,7 @@ RegisterEX_MEM RegisterEX_MEM(
 RegisterMEM_WB RegisterMEM_WB(
     //inputs
     .clk_i      (clk_i),
+    .rst_i      (rst_i),
     //from EX/MEM
     .RegWrite_i   (EX_MEM_RegWrite_o),
     .MemtoReg_i   (EX_MEM_MemtoReg_o),
